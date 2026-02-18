@@ -36,9 +36,8 @@ website:
 format:
   html:
     theme:
-      light: [flatly, assets/_theme-overrides-light.scss]
-      dark: [darkly, assets/_theme-overrides-dark.scss]
-    css: assets/styles.scss
+      light: [flatly, assets/_theme-overrides-light.scss, assets/styles.scss]
+      dark: [darkly, assets/_theme-overrides-dark.scss, assets/styles.scss]
     toc: true
     toc-depth: 3
     highlight-style: github
