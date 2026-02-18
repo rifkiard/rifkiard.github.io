@@ -1,0 +1,15 @@
+---
+title: "Blog"
+description: "Technical articles, engineering insights, and lessons learned from 6+ years of building web applications."
+listing:
+  contents: posts
+  sort: "date desc"
+  type: default
+  categories: true
+  sort-ui: true
+  filter-ui: true
+  fields: [date, title, description, categories, reading-time]
+  feed: true
+page-layout: full
+toc: false
+---

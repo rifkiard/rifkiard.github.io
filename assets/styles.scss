@@ -1,0 +1,160 @@
+/*
+ * Custom styles for rifkiard.github.io
+ * Extends Quarto's Flatly/Darkly theme
+ */
+
+/* ---------- Typography ---------- */
+body {
+    font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    font-size: 1rem;
+    line-height: 1.75;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+/* ---------- Navbar ---------- */
+.navbar {
+    background-color: var(--bs-body-bg);
+    border: none;
+    font-weight: 500;
+    box-shadow: none;
+}
+
+/* ---------- Home page ---------- */
+.quarto-title-meta {
+    margin-bottom: 1.5rem;
+}
+
+/* Contact bar on homepage — blends with page background */
+.callout.callout-style-minimal.callout-note {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin-bottom: 1rem;
+
+    .callout-body {
+        font-size: 0.9rem;
+        color: inherit;
+        padding: 0;
+    }
+
+    /* Hide the default left-border accent */
+    &::before,
+    .callout-icon-container {
+        display: none;
+    }
+}
+
+.quarto-dark .callout.callout-style-minimal.callout-note {
+    background: transparent;
+    border: none;
+}
+
+/* ---------- Blog listing ---------- */
+.quarto-listing-category-title {
+    font-weight: 600;
+}
+
+.quarto-listing .category {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-radius: 4px;
+    padding: 2px 8px;
+}
+
+/* ---------- Tables ---------- */
+table {
+    width: 100%;
+    font-size: 0.9rem;
+    border-collapse: collapse;
+    border-color: #dee2e6;
+}
+
+tr,
+table>thead {
+    border-color: #dee2e6;
+}
+
+.table>thead {
+    border-top-width: 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+thead th {
+    font-weight: 600;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0.75rem;
+}
+
+tbody td {
+    border-top: 1px solid #dee2e6;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+tbody tr:first-child td {
+    border-top: none;
+}
+
+/* Dark mode */
+.quarto-dark table {
+    border-color: rgb(67.15, 67.15, 67.15);
+}
+
+.quarto-dark tr,
+.quarto-dark thead {
+    border-color: rgb(67.15, 67.15, 67.15);
+}
+
+.quarto-dark .table>thead {
+    border-top-width: 0;
+    border-bottom: 1px solid rgb(67.15, 67.15, 67.15);
+}
+
+.quarto-dark thead th {
+    border-bottom: 1px solid rgb(67.15, 67.15, 67.15);
+}
+
+.quarto-dark tbody td {
+    border-top: 1px solid rgb(67.15, 67.15, 67.15);
+}
+
+/* ---------- Code blocks ---------- */
+pre.sourceCode {
+    border: none;
+    border-radius: 6px;
+}
+
+/* ---------- Dark mode overrides ---------- */
+.quarto-dark .navbar {
+    background-color: var(--bs-body-bg);
+    border: none;
+}
+
+/* ---------- Global border minimization ---------- */
+.card,
+.list-group-item,
+hr,
+.border,
+.border-top,
+.border-bottom,
+.border-start,
+.border-end {
+    border: none !important;
+}
+
+/* ---------- Footer ---------- */
+.nav-footer {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    border: none;
+}

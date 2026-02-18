@@ -1,0 +1,46 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - "*.qmd"
+    - "!AGENTS.md"
+    - "!ABOUT.md"
+
+website:
+  title: "Rifki Ardiansyah"
+  description: "Senior Software Engineer — Vue/Nuxt & Node.js specialist"
+  site-url: https://rifkiard.github.io
+  favicon: assets/favicon.ico
+
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - href: blog/index.qmd
+        text: Blog
+      - href: cv.qmd
+        text: CV
+    right:
+      - icon: github
+        href: https://github.com/rifkiard
+        aria-label: GitHub
+      - icon: linkedin
+        href: https://linkedin.com/in/rifkiard
+        aria-label: LinkedIn
+
+  search: true
+
+  page-footer:
+    center: "© 2026 Rifki Ardiansyah."
+
+format:
+  html:
+    theme:
+      light: [flatly, assets/_theme-overrides-light.scss]
+      dark: [darkly, assets/_theme-overrides-dark.scss]
+    css: assets/styles.scss
+    toc: true
+    toc-depth: 3
+    highlight-style: github
+    code-copy: true
+    code-overflow: wrap

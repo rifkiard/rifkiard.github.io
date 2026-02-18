@@ -1,0 +1,89 @@
+---
+title: "Scaling Vue 3 Applications with a Modular Architecture"
+author: "Rifki Ardiansyah"
+date: "2026-02-18"
+categories: [Vue.js, Architecture, Frontend]
+description: "A practical guide to structuring large-scale Vue 3 / Nuxt 3 projects using feature-based modules, shared composables, and a clean separation of concerns."
+---
+
+## The Problem with Flat Structures
+
+As Vue applications grow, the default flat file structure — grouping all components in `/components`, all stores in `/stores` — quickly becomes difficult to navigate. A 50+ component project with a single flat directory is a maintenance liability.
+
+## The Feature-Based Module Pattern
+
+The most scalable approach is to co-locate code by **feature domain**, not by type. Each module owns its own components, composables, store slice, and types.
+
+```
+src/
+  modules/
+    auth/
+      components/
+        LoginForm.vue
+        AuthGuard.vue
+      composables/
+        useAuth.ts
+      store.ts
+      types.ts
+    products/
+      components/
+        ProductCard.vue
+        ProductList.vue
+      composables/
+        useProducts.ts
+      store.ts
+      types.ts
+  shared/
+    components/
+    composables/
+    utils/
+```
+
+This structure means a developer working on the `auth` domain only needs to look inside `modules/auth/`. Cross-cutting concerns (UI primitives, utility functions) live in `shared/`.
+
+## Composables as the API Boundary
+
+Each module exposes a primary composable as its public interface. External modules interact with a feature only through this composable, never by reaching into its internals:
+
+```typescript
+// modules/auth/composables/useAuth.ts
+export function useAuth() {
+  const store = useAuthStore()
+
+  const login = async (credentials: Credentials) => {
+    await store.authenticate(credentials)
+  }
+
+  const logout = () => store.clear()
+
+  return {
+    user: computed(() => store.user),
+    isAuthenticated: computed(() => store.isAuthenticated),
+    login,
+    logout,
+  }
+}
+```
+
+Other modules import `useAuth()` — they never import `useAuthStore()` directly. This decoupling makes refactoring or replacing the auth implementation straightforward.
+
+## Lazy-Loading Modules in Nuxt 3
+
+In Nuxt 3, pair this with `defineNuxtPlugin` and lazy imports to keep the initial bundle size small:
+
+```typescript
+// plugins/products.client.ts
+export default defineNuxtPlugin(async () => {
+  const { useProducts } = await import('~/modules/products/composables/useProducts')
+  // register or prefetch as needed
+})
+```
+
+## Key Takeaways
+
+- **Co-locate by feature**, not by type.
+- **Expose a composable interface** per module; hide internal implementation details.
+- **Lazy-load modules** to keep bundle sizes manageable.
+- Keep `shared/` lean — if something is used in only one module, it belongs in that module.
+
+This pattern has served well in production codebases with 100k+ LOC. The initial overhead of setting up the structure pays dividends in onboarding speed and long-term maintainability.

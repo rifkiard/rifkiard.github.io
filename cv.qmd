@@ -1,0 +1,114 @@
+---
+title: "Rifki Ardiansyah"
+subtitle: "Software Engineer"
+format:
+  html:
+    toc: false
+    page-layout: article
+    css: assets/cv-print.css
+---
+
+::: {.print-only}
+**Email:** rifkiardiansyah670@gmail.com | **Location:** Jakarta, Indonesia  
+**LinkedIn:** linkedin.com/in/rifkiard | **GitHub:** github.com/rifkiard | **Website:** rifkiardiansyah.my.id
+:::
+
+## About
+
+Senior Software Engineer at PT Astra International Tbk - AstraWorld with 6+ years building enterprise-scale systems. Co-founded multiple digital ventures including Wotagram (15,000 users in 2 months). Specialized in Vue/Nuxt, Node.js, Go, and Dart for high-concurrency applications serving thousands of concurrent users.
+
+Experience spans enterprise CRM systems, container logistics platforms, real-time communication tools, finance applications, and marketplace ecosystems. Currently pursuing B.Sc. in Computer Science at University of the People.
+
+## Technical Skills
+
+**Languages & Frameworks:** Go (Echo), Dart (Flutter), Node.js (Express.js, Nest.js), JavaScript/TypeScript (Vue.js, Nuxt), PHP (Laravel)
+
+**Database & Tools:** Redis, PostgreSQL, MySQL, n8n (Automation), RESTful APIs
+
+**Architecture & Patterns:** Clean Architecture, Monoliths, Microservices, Real-time Systems
+
+**Infrastructure:** Cloudflare, Alibaba Cloud, Microsoft Azure, Azure DevOps (CI/CD)
+
+## Professional Experience
+
+### Senior Software Engineer - PT Astra International Tbk - AstraWorld
+**North Jakarta, Jakarta | March 2024 - Present**
+
+- Spearheaded enterprise-level data integration between AstraWorld and Astra Credit Companies (ACC), architecting systems to manage and synchronize millions of records with high reliability
+- Led end-to-end engineering of telesales systems for Toyota Astra Motor (TAM), JACCS MPM Finance, and Clipan Finance
+- Architected a dedicated WhatsApp-based omni-channel solution for the ESVI project
+- Managed full-scale cloud infrastructure on Alibaba Cloud and Azure DevOps
+- Developed automated voice recording analysis for quality assurance in telesales operations
+- Designed Single Sign-On (SSO) framework and digital vehicle handover system for Emergency Road Assistance (ERA)
+
+### Freelance Back-End Developer - JavaMifi (PT Mitra Galang Sejahtera)
+**Bekasi City, West Java | June 2025**
+
+- Implemented automated data synchronization workflows bridging internal and external systems
+- Leveraged n8n as primary automation engine with Node.js custom scripts
+- Optimized API communication pipelines to reduce manual intervention
+
+### Founding Engineer - PT Kisah Cinta Anak Bangsa
+**Bekasi City, West Java | October 2023 - January 2024**
+
+- Architected complete mobile ecosystem using Flutter with high-performance real-time features
+- Managed full development lifecycle, cloud infrastructure, and go-to-market readiness
+
+### Co-Founder & Founding Engineer - PT Berkat Warisan Nusantara
+**Bekasi City, West Java | November 2022 - May 2023**
+
+- Built hyperlocal on-demand service marketplace as sole engineer
+- Developed cross-platform mobile app (Flutter) and web platform (Vue.js)
+- Implemented real-time task matching and location-based service discovery
+
+### Software Engineer - PT BoksMan Asia Anugerah Teknologi
+**Bekasi City, West Java | June 2021 - July 2023**
+
+- Engineered comprehensive container logistics ecosystem
+- Built Freight Forwarding and Trucking Management System with real-time tracking
+- Developed Order Management System and Container Depot Management System
+- Created "Monitower" ERP solution for AR, AP, and multi-party rate management
+
+### Full-Stack Developer Intern - PT Bumi Daya Plaza
+**Central Jakarta, Jakarta | August 2019 - November 2019**
+
+- Developed unified ERP application for construction department
+- Engineered financial modules: Project Tendering, Budget Planning, and tracking
+- Built vendor management system for material procurement optimization
+
+### Freelance Full-Stack Developer - PT Megonesia Anugerah Nusantara
+**Bekasi City, West Java | November 2018 - February 2024**
+
+- Built enterprise systems for financial institutions (Bank Jogja, Bank HIK Parahyangan Bandung)
+- Developed e-sports tournament infrastructure (Jakarta Esport Series 2021)
+- Created streaming platforms for budaya.tv
+- Engineered school and university management systems
+- Built production tracking, e-commerce, and company profile websites
+- Launched ReadZone social network and COVID-19 tracking application
+
+## Startup Initiatives
+
+- **Undangly** (Co-founder, 2024 - Present): Digital platform for event invitations and guest management
+- **Wotagram** (Founder, 2024 - Present): Niche social media for J-pop idol fans, 15,000 users in 2 months
+- **Mekasir** (Founder, 2024 - Present): Point of sale (POS) application for SMBs
+- **Muvenz** (Co-founder, 2022): Marketplace for booking local entertainers
+
+## Education
+
+**B.Sc. in Computer Science** - University of the People  
+Pasadena, California | Expected November 2026  
+- Member of the Ambassador Program
+- Certified in CEFR B2+
+
+**Diploma in Computer & Network Engineering** - SMK Negeri 4 Kota Bekasi  
+Bekasi, West Java | Graduated June 2021  
+- Co-founded the first web programming extracurricular
+
+## Key Certifications
+
+- Data Science for Sports - Udemy (Apr 2023)
+- CEFR B2+ - University of the People (Jan 2023)
+- Machine Learning From Basic to Advanced - Udemy (Dec 2022)
+- Complete Vue.js 3 - Udemy (Jul 2022)
+- MERN Stack Web Development - BuildWithAngga (Sep 2022)
+- Full-Stack Laravel Flutter - BuildWithAngga (Sep 2022)

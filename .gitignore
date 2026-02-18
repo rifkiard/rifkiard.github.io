@@ -1,0 +1,30 @@
+# Quarto
+_site/
+.quarto/
+*_cache/
+*_files/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node (if using)
+node_modules/
+package-lock.json
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.bak
+
+/.quarto/
+**/*.quarto_ipynb
