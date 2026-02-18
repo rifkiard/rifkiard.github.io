@@ -30,6 +30,9 @@ jobs:
       - name: Render Quarto Project
         run: quarto render
 
+      - name: Add .nojekyll file
+        run: touch _site/.nojekyll
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
