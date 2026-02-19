@@ -2,13 +2,13 @@ project:
   type: website
   output-dir: _site
   render:
-    - "*.qmd"
+    - "**/*.qmd"
     - "!AGENTS.md"
     - "!ABOUT.md"
 
 website:
   title: "Rifki Ardiansyah"
-  description: "Senior Software Engineer — Vue/Nuxt & Node.js specialist"
+  description: "Senior Software Engineer - Vue/Nuxt & Node.js specialist"
   site-url: https://rifkiard.github.io
   favicon: assets/favicon.ico
 
