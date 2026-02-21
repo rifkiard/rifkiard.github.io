@@ -154,6 +154,70 @@ hr,
     border: none !important;
 }
 
+/* ---------- Share Buttons ---------- */
+.share-buttons {
+    margin-top: 2.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--bs-border-color, #dee2e6);
+
+    .share-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--bs-secondary-color, #6c757d);
+        margin-bottom: 0.75rem;
+    }
+
+    .share-buttons-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .share-btn {
+        display: inline-block;
+        padding: 0.4rem 1rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: opacity 0.15s ease;
+
+        &:hover {
+            opacity: 0.85;
+            text-decoration: none;
+        }
+    }
+
+    .share-btn-x {
+        background-color: #000;
+        color: #fff;
+    }
+
+    .share-btn-linkedin {
+        background-color: #0a66c2;
+        color: #fff;
+    }
+
+    .share-btn-whatsapp {
+        background-color: #25d366;
+        color: #fff;
+    }
+
+    .share-btn-facebook {
+        background-color: #1877f2;
+        color: #fff;
+    }
+
+    .share-btn-copy {
+        background-color: var(--bs-secondary-bg, #e9ecef);
+        color: var(--bs-body-color, #212529);
+    }
+}
+
 /* ---------- Footer ---------- */
 .nav-footer {
     font-size: 0.85rem;
