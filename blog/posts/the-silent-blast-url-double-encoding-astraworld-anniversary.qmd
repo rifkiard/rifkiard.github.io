@@ -1,0 +1,184 @@
+---
+title: "The Silent Blast: How a Single Space Character Derailed AstraWorld's Anniversary Campaign"
+author: "Rifki Ardiansyah"
+date: "2026-02-21"
+categories: [Incident, PostMortem, URLEncoding, Omnichannel, AstraWorld, SoftwareEngineering]
+description: "A case study on how a whitespace character in an image filename caused a URL double-encoding failure that silently took down a 2,000-recipient omnichannel blast on Astra International's 59th anniversary."
+---
+
+*A Case Study on URL Double-Encoding Failure in Omnichannel Marketing Systems*
+
+---
+
+## Abstract
+
+This article documents a promotional blast failure that occurred on February 20, 2026, during the 59th Anniversary of PT Astra International Tbk. AstraWorld prepared a time-sensitive membership Road Assistance renewal campaign - targeting approximately 2,000 customers - intended to be distributed via an omnichannel blast system on this commemorative date. The blast failed silently due to a URL double-encoding issue: when generating a time-limited, signed temporary URL via Alibaba Cloud OSS (Object Storage Service), a whitespace character in the image filename caused the `%20` encoding to be re-encoded as `%2520`, producing an unresolvable file reference. The root cause was identified within the application layer - not the upstream API. Following notification from the ERA (Emergency Road Assistance) team and approval from the AstraWorld CEO, a sampling blast of 100 customers was successfully conducted on the same day after the fix was applied. The remaining recipients were scheduled for the following Monday.
+
+---
+
+## 1. Background
+
+Every February 20th, PT Astra International Tbk marks another year of its legacy. On February 20, 2026, the company celebrated its **59th anniversary** - and for AstraWorld, this was more than just a milestone to celebrate. It was a campaign opportunity.
+
+The plan was to launch an exclusive, single-day promotion offering membership **Road Assistance renewal discounts**, delivered through an omnichannel blast to targeted AstraWorld members. The exclusivity was intentional: the offer was valid only on the anniversary date itself, designed to create urgency and tie customer engagement directly to the Astra brand moment.
+
+Everything was set. The creative was ready, the campaign was configured, and the blast was submitted.
+
+Except - it never went out.
+
+---
+
+## 2. Incident Timeline
+
+| Time | Event |
+|---|---|
+| Morning | Omnichannel blast campaign configured and submitted |
+| 14:00 WIB | ERA (Emergency Road Assistance) team reported that customers had not received the blast message |
+| 14:00 WIB | Internal log review initiated - Meta API logs showed message status as **"accepted"**, masking the actual delivery failure |
+| 14:00 WIB | Joint investigation commenced with the Astra API team |
+| 14:30 WIB | Root cause identified in the application layer; fix applied immediately |
+| 15:00 WIB | AstraWorld CEO approval obtained; sampling blast of **100 customers** in Jakarta and Semarang executed successfully |
+| Monday, Feb 23 | Full reblast to all remaining ~1,900+ customers |
+
+What makes this timeline particularly frustrating is that our own logs showed no sign of trouble. The Meta API had returned an **"accepted"** status for the messages - technically accurate, as the API had accepted the request - but misleading, since the actual media content was unresolvable on the recipient's end. It was the **ERA team's field report** - customers hadn't received anything - that triggered the real investigation.
+
+By 14:30 WIB the root cause had been found and fixed. By 15:00 WIB, with CEO approval, a controlled sampling blast of 100 customers across Jakarta and Semarang was live and confirmed delivered. The remaining ~1,900+ customers were rescheduled for Monday, avoiding a weekend send where engagement rates are typically lower.
+
+---
+
+## 3. Root Cause Analysis
+
+### 3.1 The Culprit: A Space in a Filename
+
+The promotional image attached to the blast had a **whitespace character (a space)** in its filename - something most people would never think twice about. But in the context of signed temporary URL generation and cloud storage pipelines, that single space set off a chain reaction.
+
+To serve the media attachment securely, the application generated a **temporary signed URL** via Alibaba Cloud OSS - a time-limited, signature-authenticated URL that grants access to a private object for a defined period. This is a common pattern for secure media delivery in omnichannel systems.
+
+During the URL generation process, the filename containing a space was first encoded - the space became `%20` - producing what appeared to be a valid URL:
+
+```
+https://oss.example.com/attachments/promo%20astra.jpg
+```
+
+This is standard percent-encoding behavior - valid in isolation. The problem arose at the next step.
+
+### 3.2 Double-Encoding in Signed Temporary URLs: When `%20` Becomes `%2520`
+
+When the OSS SDK generated the signed temporary URL, it treated the incoming filename string as a raw (unencoded) input and applied its own URL encoding pass on top. Since `%` is not a URL-safe character in raw strings, it was re-encoded as `%25` - turning `%20` into `%2520`:
+
+```
+https://oss.example.com/attachments/promo%2520astra.jpg?OSSAccessKeyId=...&Expires=...&Signature=...
+```
+
+The signature was computed against this double-encoded path. But the actual file stored in OSS had a path containing a literal space (or `%20`) - not `%2520`. The URL now pointed to a resource that did not exist. OSS could not resolve it, the media attachment failed to load, and as a consequence, the entire blast delivery was aborted.
+
+This is the core hazard of double-encoding in signed URL pipelines: **the signature is cryptographically valid, but bound to the wrong path**. The system has no way to distinguish a signed-but-broken URL from a signed-and-correct one - making the failure completely invisible until someone tries to actually fetch the file.
+
+### 3.3 A Silent Failure
+
+What made this especially damaging was the failure mode: **silent**. The system did not raise an immediate, visible error at the time of blast submission. The campaign appeared to be successfully queued. There was no alert, no delivery failure notification - nothing that would prompt the team to investigate.
+
+We only discovered the failure when manually checking delivery status hours later.
+
+### 3.4 Where Did the Fault Lie?
+
+Initial suspicion pointed toward the Astra API team's infrastructure. Following a joint analysis between the omnichannel application team and the Astra API team, the conclusion was clear:
+
+**The defect resided within the omnichannel application itself** - specifically in how it constructed and passed media URLs without sanitizing filenames prior to encoding.
+
+The Astra API team's systems behaved exactly as designed. The application I built was the source of the problem.
+
+---
+
+## 4. Impact Assessment
+
+**Operational Impact:** The promotional blast - intended to reach approximately **2,000 AstraWorld members** on February 20, 2026 - was not delivered to a single recipient at the time of the original submission.
+
+**Detection Gap:** The failure was not caught by internal monitoring. Our own logs showed messages with an **"accepted"** status from the Meta API - technically correct, as the API had accepted the request, but it said nothing about whether the media content was actually reachable by recipients. It was the **ERA (Emergency Road Assistance) team** that first flagged the anomaly based on customer non-receipt, prompting the investigation. This highlights a critical gap: API-level status codes do not guarantee end-to-end delivery success.
+
+**Business Impact:** With the promotion exclusively tied to Astra's anniversary date, the recovery options were severely constrained:
+
+- Full reblast on the same day was not feasible (failure discovered at ~14:00 WIB).
+- Rescheduling to Saturday reduced expected engagement rates.
+- Extending the promo deadline risked undermining its exclusivity and brand alignment with the anniversary.
+
+**Partial Recovery:** Following CEO approval, a sampling blast of 100 customers was executed on the same day after the fix was validated. The remaining ~1,900+ customers were rescheduled for Monday, February 23, 2026 - accepting the trade-off of delayed delivery over a weekend send.
+
+**Missed Opportunity:** The anniversary moment - and the urgency it naturally created - could not be fully recovered. For customers who were meant to receive the offer on a celebratory date, the Monday delivery carries a different emotional context entirely.
+
+---
+
+## 5. Resolution
+
+The fix itself was technically straightforward: **replace all whitespace characters in media filenames with underscores before upload**, eliminating the encoding-sensitive character at the source.
+
+| | Filename |
+|---|---|
+| Before | `promo astra anniversary.jpg` |
+| After | `promo_astra_anniversary.jpg` |
+
+With spaces removed, the OSS signed URL generator receives a clean, encoding-free filename - no `%20` is introduced, and therefore no `%2520` double-encoding can occur downstream.
+
+Once the fix was applied and validated, the team proceeded in two stages:
+
+**Stage 1 - Sampling Blast (February 20, same day):** With approval from the AstraWorld CEO, a controlled blast of **100 customers** was executed to confirm the system was fully operational. All 100 messages were delivered successfully, confirming the fix.
+
+**Stage 2 - Full Reblast (Monday, February 23):** The remaining approximately **1,900+ customers** were queued for delivery on the following Monday, avoiding a weekend send where engagement rates are typically lower.
+
+---
+
+## 6. Corrective and Preventive Actions
+
+Fixing the immediate issue is only the first step. To prevent this class of failure from recurring, the following actions were defined:
+
+| # | Action | Type | Status |
+|---|---|---|---|
+| 1 | Replace spaces with underscores in all media filenames at upload | Corrective | Completed |
+| 2 | Implement filename sanitization function in the upload pipeline | Preventive | Completed |
+| 3 | Add pre-blast media URL validation (HTTP HEAD check before submission) | Preventive | Completed |
+| 4 | Implement delivery monitoring with zero-delivery anomaly alerting | Preventive | Completed |
+| 5 | Update blast SOP checklist to include media URL verification step | Preventive | Completed |
+
+The most impactful preventive measure - beyond sanitization - is **item 3**: validating that the media URL is actually reachable before a blast is ever submitted. Had this check existed, the failure would have been caught at the moment of submission, not two hours later.
+
+---
+
+## 7. Lessons Learned
+
+### Percent-encoding is not idempotent - especially in signed URL pipelines
+
+When generating signed temporary URLs via cloud storage SDKs like Alibaba Cloud OSS, the SDK applies its own encoding pass to the object key. If the filename has already been encoded (e.g., space to `%20`), the `%` character gets re-encoded to `%25`, producing `%2520`. The signature is then computed against this double-encoded path - cryptographically valid, but pointing to the wrong resource. The safest mitigation is always to sanitize filenames at the source, before any encoding occurs.
+
+### External teams should not be your monitoring system
+
+The failure in this incident was not flagged by any internal alerting - it was the **ERA team** that noticed and reported the issue. A blast pipeline handling thousands of customers should have proactive delivery verification built in, not rely on downstream teams to notice that messages never arrived.
+
+### "Accepted" is not "delivered"
+
+The Meta API returned an **"accepted"** status for every message in the blast - and our logs recorded it as such. This created a false sense of success. "Accepted" only means the API received the request; it says nothing about whether the media attachment was resolvable or whether the message was actually rendered on the recipient's device. End-to-end delivery verification must go beyond API acknowledgment.
+
+### Controlled recovery is better than no recovery
+
+When full reblast on the anniversary day became impossible, the team chose a pragmatic path: a CEO-approved sampling blast of 100 customers to validate the fix, followed by a full reblast on Monday. This approach balanced the need for caution (system validation) against the need for action (partial campaign delivery on the right day). When the ideal is gone, the next best option still matters.
+
+### Ownership matters
+
+It would have been easy to point fingers at the Astra API team's infrastructure. Instead, a proper joint analysis led to an accurate attribution - the application layer was responsible. Honest root cause analysis, even when uncomfortable, is the only path to a real fix.
+
+---
+
+## 8. Conclusion
+
+What brought down AstraWorld's anniversary campaign was not a complex system failure or a rare edge case. It was a space. One character in a filename, overlooked at configuration time, that cascaded through a signed URL generation pipeline into a broken media reference - silently, without warning, on one of the most important campaign dates of the year.
+
+The failure was not even discovered internally. It was the ERA team that sounded the alarm.
+
+The technical fix took minutes. The path to partial recovery required CEO-level approval, a controlled 100-customer sampling blast to validate the system, and a decision to push the remaining ~1,900 customers to Monday - accepting the trade-off of a delayed send over a suboptimal weekend delivery.
+
+This incident is a reminder that in production systems handling time-sensitive communications, the smallest assumptions carry the largest risks. A single space in a filename. A signed URL that encodes twice. A monitoring gap that lets a failure go undetected for hours. Any one of these, in isolation, is manageable. Together, they erased an entire campaign's delivery window on the day it mattered most.
+
+Robust filename sanitization, pre-blast URL validation, and delivery monitoring are not nice-to-haves - they are the difference between a campaign that lands and one that disappears without a trace.
+
+---
+
+*Rifki Ardiansyah is a Software Engineer at AstraWorld, PT Astra International Tbk, responsible for building and maintaining the omnichannel WhatsApp system.*
