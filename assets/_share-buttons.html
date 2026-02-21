@@ -1,0 +1,86 @@
+<script>
+(function () {
+  var content = document.getElementById("quarto-document-content");
+  if (!content) return;
+
+  var pageUrl = window.location.href;
+  var pageTitle = document.title;
+
+  var container = document.createElement("div");
+  container.className = "share-buttons";
+
+  var label = document.createElement("p");
+  label.className = "share-label";
+  label.textContent = "Share this article";
+  container.appendChild(label);
+
+  var row = document.createElement("div");
+  row.className = "share-buttons-row";
+
+  var links = [
+    {
+      label: "X / Twitter",
+      href:
+        "https://twitter.com/intent/tweet?url=" +
+        encodeURIComponent(pageUrl) +
+        "&text=" +
+        encodeURIComponent(pageTitle),
+      className: "share-btn-x",
+    },
+    {
+      label: "LinkedIn",
+      href:
+        "https://www.linkedin.com/sharing/share-offsite/?url=" +
+        encodeURIComponent(pageUrl),
+      className: "share-btn-linkedin",
+    },
+    {
+      label: "WhatsApp",
+      href:
+        "https://wa.me/?text=" +
+        encodeURIComponent(pageTitle + " " + pageUrl),
+      className: "share-btn-whatsapp",
+    },
+    {
+      label: "Facebook",
+      href:
+        "https://www.facebook.com/sharer/sharer.php?u=" +
+        encodeURIComponent(pageUrl),
+      className: "share-btn-facebook",
+    },
+  ];
+
+  links.forEach(function (btn) {
+    var a = document.createElement("a");
+    a.href = btn.href;
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    a.className = "share-btn " + btn.className;
+    a.setAttribute("aria-label", "Share on " + btn.label);
+    a.textContent = btn.label;
+    row.appendChild(a);
+  });
+
+  var copyBtn = document.createElement("button");
+  copyBtn.className = "share-btn share-btn-copy";
+  copyBtn.setAttribute("aria-label", "Copy link to clipboard");
+  copyBtn.textContent = "Copy Link";
+  copyBtn.addEventListener("click", function () {
+    navigator.clipboard.writeText(pageUrl).then(function () {
+      copyBtn.textContent = "Copied!";
+      setTimeout(function () {
+        copyBtn.textContent = "Copy Link";
+      }, 2000);
+    }).catch(function () {
+      copyBtn.textContent = "Copy failed";
+      setTimeout(function () {
+        copyBtn.textContent = "Copy Link";
+      }, 2000);
+    });
+  });
+  row.appendChild(copyBtn);
+
+  container.appendChild(row);
+  content.appendChild(container);
+})();
+</script>
