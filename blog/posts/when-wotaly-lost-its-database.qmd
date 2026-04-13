@@ -24,7 +24,7 @@ We believe the combination of these two conditions is what triggered the inciden
 
 Wotaly was offline for 5 days. Not because of a server outage or a critical bug, but because there was practically no user data left to serve.
 
-The investigation and restore process took over three days. The nearest backup turned out to be incomplete - the data at that point was already partially missing, suggesting the corruption had started earlier than we initially suspected. The provider's support team eventually restored from an older backup, which meant accepting the permanent loss of data from a specific window of time.
+The investigation and restore process took over three days. The restore itself did not go smoothly. Support first attempted to restore from the April 8 backup, but that attempt failed - the data at that point was already in an incomplete state, confirming that the corruption had started earlier than we initially suspected. The restore was eventually completed using the April 7 backup, which meant that data belonging to users who registered between April 7 and 9 could not be fully recovered. In total, roughly 2-3 days of user activity was permanently lost.
 
 ---
 
@@ -44,7 +44,7 @@ After investigating further, there are several things worth examining objectivel
 
 **The SDN upgrade:** The provider confirmed they were performing an SDN upgrade in the same region at the time of the incident. This upgrade caused random disconnects in VPC connections. For a managed database service - which is supposed to be isolated and protected - having internal infrastructure maintenance result in customer data loss is not something that should happen. It was also never communicated to customers beforehand.
 
-**Unreliable backups:** The nearest backup the provider had was already in an incomplete state, even before the incident we reported. This means there was a window of time where their backup system was silently failing to capture data correctly, with no indication or notification to us.
+**Unreliable backups:** The nearest backup available - the April 8 snapshot - was already in an incomplete state before the incident we reported, which is why the first restore attempt failed outright. The usable backup turned out to be from April 7. This means there was a window of time where the backup system was silently failing to capture data correctly, with no indication or notification to us.
 
 **No self-service restore:** There was no UI in the management console to restore data independently. Everything had to go through a support ticket - which, in an emergency, slowed the recovery significantly. A large portion of our 5 days of downtime was spent waiting in queue for a manual restore from their team.
 
