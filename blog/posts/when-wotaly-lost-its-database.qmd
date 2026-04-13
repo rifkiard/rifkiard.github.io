@@ -16,7 +16,7 @@ This is not a hypothetical. This is what actually happened to Wotaly not long ag
 
 [Wotaly](https://wotaly.app) is a social platform for idol fan communities that we had recently launched. Early growth was encouraging: in under a month, nearly a thousand users had registered organically, without any paid advertising. Our database was hosted on a managed PostgreSQL service from a local cloud provider.
 
-Around April 9th, our billing balance was running low. Worth noting: the balance had actually gone into negative territory, meaning the service continued running past the zero mark. That detail matters - it tells us the provider's system was designed to tolerate negative balances rather than immediately cutting off the service.
+On April 9th at around 4:27 AM, our billing balance ran out entirely. We were not aware of this at the time - there was no alert, and nothing on our end indicated the service was in trouble. By 8:16 PM that same evening, we had topped up the balance, roughly 16 hours after it had depleted. Worth noting: the balance had actually gone into negative territory before hitting zero, meaning the service was already running on borrowed time before we noticed. That detail matters - it tells us the provider's system was designed to tolerate negative balances rather than immediately cutting off the service.
 
 At the same time, the provider was performing an infrastructure upgrade: a Software Defined Network (SDN) stack update in the Jakarta-South region. This caused instability in Virtual Private Cloud (VPC) connections, manifesting as random disconnects lasting several minutes.
 
@@ -24,7 +24,7 @@ We believe the combination of these two conditions is what triggered the inciden
 
 Wotaly was offline for 5 days. Not because of a server outage or a critical bug, but because there was practically no user data left to serve.
 
-The investigation and restore process took over three days. The nearest backup turned out to be incomplete - the data at that point was already partially missing, suggesting the corruption had started earlier than we initially suspected. The provider's support team eventually restored from an older backup, which meant accepting the permanent loss of data from a specific window of time.
+The investigation and restore process took over three days. The restore itself did not go smoothly. Support first attempted to restore from the April 8 backup, but that attempt failed - the data at that point was already in an incomplete state, confirming that the corruption had started earlier than we initially suspected. The restore was eventually completed using the April 7 backup, which meant that data belonging to users who registered between April 7 and 9 could not be fully recovered. In total, roughly 2-3 days of user activity was permanently lost.
 
 ---
 
@@ -44,7 +44,7 @@ After investigating further, there are several things worth examining objectivel
 
 **The SDN upgrade:** The provider confirmed they were performing an SDN upgrade in the same region at the time of the incident. This upgrade caused random disconnects in VPC connections. For a managed database service - which is supposed to be isolated and protected - having internal infrastructure maintenance result in customer data loss is not something that should happen. It was also never communicated to customers beforehand.
 
-**Unreliable backups:** The nearest backup the provider had was already in an incomplete state, even before the incident we reported. This means there was a window of time where their backup system was silently failing to capture data correctly, with no indication or notification to us.
+**Unreliable backups:** The nearest backup available - the April 8 snapshot - was already in an incomplete state before the incident we reported, which is why the first restore attempt failed outright. The usable backup turned out to be from April 7. This means there was a window of time where the backup system was silently failing to capture data correctly, with no indication or notification to us.
 
 **No self-service restore:** There was no UI in the management console to restore data independently. Everything had to go through a support ticket - which, in an emergency, slowed the recovery significantly. A large portion of our 5 days of downtime was spent waiting in queue for a manual restore from their team.
 
