@@ -16,7 +16,7 @@ This is not a hypothetical. This is what actually happened to Wotaly not long ag
 
 [Wotaly](https://wotaly.app) is a social platform for idol fan communities that we had recently launched. Early growth was encouraging: in under a month, nearly a thousand users had registered organically, without any paid advertising. Our database was hosted on a managed PostgreSQL service from a local cloud provider.
 
-Around April 9th, our billing balance was running low. Worth noting: the balance had actually gone into negative territory, meaning the service continued running past the zero mark. That detail matters - it tells us the provider's system was designed to tolerate negative balances rather than immediately cutting off the service.
+On April 9th at around 4:27 AM, our billing balance ran out entirely. We were not aware of this at the time - there was no alert, and nothing on our end indicated the service was in trouble. By 8:16 PM that same evening, we had topped up the balance, roughly 16 hours after it had depleted. Worth noting: the balance had actually gone into negative territory before hitting zero, meaning the service was already running on borrowed time before we noticed. That detail matters - it tells us the provider's system was designed to tolerate negative balances rather than immediately cutting off the service.
 
 At the same time, the provider was performing an infrastructure upgrade: a Software Defined Network (SDN) stack update in the Jakarta-South region. This caused instability in Virtual Private Cloud (VPC) connections, manifesting as random disconnects lasting several minutes.
 
