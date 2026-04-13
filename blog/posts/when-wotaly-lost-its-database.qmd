@@ -1,0 +1,113 @@
+---
+title: "When Wotaly Lost Its Database: 5 Days of Downtime and the Hard Lessons We Took"
+author: "Rifki Ardiansyah"
+date: "2026-04-13"
+categories: [PostgreSQL, DevOps, Startup, Database, Backup, Cloud Infrastructure]
+description: "A candid account of a data loss incident at Wotaly - nearly a thousand users wiped out, five days offline, and everything we should have done from day one."
+---
+
+No alerts. No warnings. Just silence - and suddenly, a month's worth of data from over 900 active users of [Wotaly](https://wotaly.app) was almost entirely gone.
+
+This is not a hypothetical. This is what actually happened to Wotaly not long ago.
+
+---
+
+## What Happened
+
+[Wotaly](https://wotaly.app) is a social platform for idol fan communities that we had recently launched. Early growth was encouraging: in under a month, nearly a thousand users had registered organically, without any paid advertising. Our database was hosted on a managed PostgreSQL service from a local cloud provider.
+
+Around April 9th, our billing balance was running low. Worth noting: the balance had actually gone into negative territory, meaning the service continued running past the zero mark. That detail matters - it tells us the provider's system was designed to tolerate negative balances rather than immediately cutting off the service.
+
+At the same time, the provider was performing an infrastructure upgrade: a Software Defined Network (SDN) stack update in the Jakarta-South region. This caused instability in Virtual Private Cloud (VPC) connections, manifesting as random disconnects lasting several minutes.
+
+We believe the combination of these two conditions is what triggered the incident - a critically low balance coinciding with network instability on the provider's side. When the service came back online after we topped up the balance, only 26 rows remained in the `users` table. Nearly all user data was gone, and the database had effectively reverted to its initial state.
+
+Wotaly was offline for 5 days. Not because of a server outage or a critical bug, but because there was practically no user data left to serve.
+
+The investigation and restore process took over three days. The nearest backup turned out to be incomplete - the data at that point was already partially missing, suggesting the corruption had started earlier than we initially suspected. The provider's support team eventually restored from an older backup, which meant accepting the permanent loss of data from a specific window of time.
+
+---
+
+## Who Was Responsible?
+
+This question deserves an honest answer - not to assign blame, but to understand what went wrong and prevent it from happening again.
+
+### On our end
+
+We failed to monitor our billing. No alert was configured to notify us when the balance was running low. This was a straightforward operational oversight that could have been prevented with a simple step. We own this entirely.
+
+### On the provider's end
+
+After investigating further, there are several things worth examining objectively.
+
+**The grace period policy:** According to the provider's official Terms of Service, there should be a clear sequence when billing fails: the service is suspended first, then terminated only if no payment is made within a 5-day grace period. The fact that our balance went negative means the service was not shut off immediately when funds ran out. So why did data disappear? To this day, we have not received a satisfactory technical explanation from the provider.
+
+**The SDN upgrade:** The provider confirmed they were performing an SDN upgrade in the same region at the time of the incident. This upgrade caused random disconnects in VPC connections. For a managed database service - which is supposed to be isolated and protected - having internal infrastructure maintenance result in customer data loss is not something that should happen. It was also never communicated to customers beforehand.
+
+**Unreliable backups:** The nearest backup the provider had was already in an incomplete state, even before the incident we reported. This means there was a window of time where their backup system was silently failing to capture data correctly, with no indication or notification to us.
+
+**No self-service restore:** There was no UI in the management console to restore data independently. Everything had to go through a support ticket - which, in an emergency, slowed the recovery significantly. A large portion of our 5 days of downtime was spent waiting in queue for a manual restore from their team.
+
+The flow that should exist in a mature cloud service looks like this:
+
+1. Low balance: send a notification to the customer
+2. Balance reaches zero: suspend the service, data remains intact
+3. Grace period (per TOS): customer can top up and restore independently
+4. After grace period expires: termination, with advance notice
+
+What we experienced did not follow this sequence, and no transparent explanation was provided for why it did not.
+
+---
+
+## Lesson Learned: What We Should Have Done from Day One
+
+### 1. Maintain your own backups - do not rely solely on the provider
+
+Managed services typically include automatic backup features. But "backup exists" is not the same as "backup can be trusted." In our case, the provider's own backups were compromised precisely when we needed them most. You need an independent copy that you fully control.
+
+```bash
+# A simple pg_dump that can be scheduled as a cron job
+pg_dump -h <host> -U <user> -d <dbname> -F c -f backup_$(date +%Y%m%d_%H%M).dump
+```
+
+Push this dump to S3-compatible object storage on a schedule - daily at minimum. This is the only backup you truly own.
+
+### 2. Set billing alerts from day one
+
+Almost every cloud provider offers balance notification features. Set the threshold well before the balance actually runs out. Do not wait until the situation becomes critical. This is a mistake that sits entirely with us, and it is one that should never happen.
+
+### 3. Read and understand your provider's TOS and actual behavior
+
+Read the Terms of Service carefully before subscribing: what happens when billing fails? Is there a grace period? How long? What does the restore process look like - is it self-service or does it require a support ticket? If this information is not explicitly available, ask directly. More importantly: **test worst-case scenarios before going to production, not after**.
+
+### 4. Avoid a single point of failure for billing
+
+Use more than one payment method if possible. Set up auto top-up or maintain a buffer balance as a fallback so that a missed payment cannot take down a service that holds user data.
+
+### 5. Test restores regularly
+
+A backup that has never been tested is a backup that cannot be trusted. Run periodic restore drills to a separate environment to verify that data can actually be recovered correctly. Do not wait for a disaster to find out whether your backups work.
+
+---
+
+## Final Thoughts
+
+This incident was painful, mainly because the data belonged to real users who had placed their trust in Wotaly. A month of organic growth was effectively erased overnight, and the platform was down for five full days.
+
+Responsibility here does not sit with one party alone. We were negligent about billing monitoring - that is a fact and we acknowledge it fully. But there were also failures on the infrastructure side: an SDN upgrade that was not communicated to customers and that impacted data in a managed database service, combined with a backup system that turned out to be unreliable at the moment it was needed most. These two factors are what turned what should have been a temporary service suspension into a significant data loss event.
+
+A few conclusions from all of this:
+
+**Neglecting billing can directly contribute to a data disaster.** This is a responsibility that cannot be delegated to anyone else.
+
+**Managed does not mean zero risk.** The word "managed" means the provider handles the infrastructure - it does not mean your data is automatically safe under all conditions.
+
+**Independent backups are insurance, not optional extras.** Especially for user data that cannot be reproduced.
+
+**Understand your TOS before an incident, not after.** Grace period policies, suspension behavior, and restore procedures are things you should know on the first day of a subscription.
+
+And finally: **no matter how fast you move building a product, the operational foundation needs to be in place from the beginning.** Monitoring, backups, and billing management are not problems to solve after achieving product-market fit. They are prerequisites for surviving long enough to get there.
+
+---
+
+*This post is based on a real incident experienced by Wotaly. The provider's name is not mentioned not to conceal anything, but because the focus here is on the patterns and lessons that apply broadly - not on any specific vendor.*
