@@ -112,13 +112,21 @@ The software page has no contact form. It uses email, LinkedIn and GitHub links.
 
 ## Deployment
 
-This repository is configured for GitHub Pages with the custom domain in the root `CNAME` file:
+The live site is deployed with GitHub Pages from the **`personal-branding`** branch:
 
 ```
-rifkiardiansyah.my.id
+Repository: rifkiard/rifkiard.github.io
+Live URL:   https://rifkiardiansyah.my.id/
+Branch:     personal-branding
+Path:       /
+Domain:     rifkiardiansyah.my.id
 ```
 
-The section URLs are already reflected in the canonical tags, Open Graph tags, JSON-LD and `sitemap.xml`. If you move a section to a different path or domain, update those absolute URLs in that section's `index.html`.
+The previous Quarto site remains preserved on the `main` branch. The `main` branch is no longer the live source; make future site changes on `personal-branding`.
+
+The custom domain is configured in GitHub Pages and also stored in the root `CNAME` file. HTTPS enforcement is enabled.
+
+The section URLs are reflected in the canonical tags, Open Graph tags, JSON-LD and `sitemap.xml`. If you move a section to a different path or domain, update those absolute URLs in that section's `index.html`.
 
 The root sitemap currently lists all three pages:
 
@@ -128,7 +136,7 @@ The root sitemap currently lists all three pages:
 
 Add `/badminton/` when that page is ready.
 
-The root also contains `robots.txt` and the `CNAME`. Keep both at the repository root. The current domain may still be serving an older software portfolio at `/`; move that page to `/software-engineer/` or replace it with a landing page before deploying.
+The root also contains `robots.txt`, `.nojekyll` and the `CNAME`. Keep them at the repository root.
 
 ## Cache busting
 
@@ -149,8 +157,8 @@ The CSS, JavaScript and images use a `?v=20261119e` query string. When you repla
 - [ ] Add chest, waist, hips and trouser measurements when available.
 - [ ] Confirm photo usage rights and add a photographer or event credit if needed.
 - [ ] Replace the software profile photo and regenerate its social card.
-- [ ] Move the older software portfolio to `/software-engineer/` or replace the root with a landing page.
 - [ ] Add `/badminton/` when ready and update `sitemap.xml`.
+- [ ] Verify the live Pages deployment after each push to `personal-branding`.
 - [ ] Confirm the Instagram handle and the WhatsApp number.
 - [ ] Review the package inclusions and availability.
 - [ ] Test the comp card print flow in Chrome and Safari.
