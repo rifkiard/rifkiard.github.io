@@ -1,0 +1,371 @@
+/* =========================================================
+   Rifki Ardiansyah — Section chooser
+   Static HTML/CSS. No framework, build step or backend.
+   ========================================================= */
+
+:root {
+  --paper: #f2ede4;
+  --ink: #17150f;
+  --muted: #6b645a;
+  --line: rgba(23, 21, 15, 0.15);
+  --clay: #b24d2c;
+  --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans: "Inter Tight", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --gutter: clamp(20px, 4vw, 56px);
+  --max: 1560px;
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100svh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+p,
+h1 {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+svg {
+  display: block;
+}
+
+::selection {
+  background: var(--clay);
+  color: var(--paper);
+}
+
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: -4px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 20;
+  padding: 10px 16px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 11px;
+  transform: translateY(-160%);
+  transition: transform 0.2s var(--ease);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.container {
+  width: 100%;
+  max-width: var(--max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* ---------- Header ---------- */
+.site-header {
+  flex: none;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 76px;
+}
+
+.brand {
+  font-family: var(--serif);
+  font-size: 22px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.location {
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- Chooser ---------- */
+.chooser {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 0;
+}
+
+.choice {
+  --panel-bg: var(--paper);
+  --panel-hover: var(--paper);
+  --panel-ink: var(--ink);
+  --panel-muted: var(--muted);
+  --panel-line: var(--line);
+  --panel-accent: var(--clay);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 540px;
+  padding: clamp(28px, 4vw, 56px);
+  background: var(--panel-bg);
+  color: var(--panel-ink);
+  transition: background 0.45s var(--ease);
+}
+
+.choice--software {
+  --panel-bg: #15171a;
+  --panel-hover: #1c2228;
+  --panel-ink: #f2ede4;
+  --panel-muted: rgba(242, 237, 228, 0.6);
+  --panel-line: rgba(242, 237, 228, 0.16);
+  --panel-accent: #9db9cd;
+}
+
+.choice--model {
+  --panel-bg: #e8e1d6;
+  --panel-hover: #ded4c6;
+  --panel-ink: #17150f;
+  --panel-muted: #625b51;
+  --panel-line: rgba(23, 21, 15, 0.16);
+  --panel-accent: #b24d2c;
+}
+
+.choice:hover {
+  background: var(--panel-hover);
+}
+
+.choice-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--panel-line);
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--panel-muted);
+}
+
+.choice-number {
+  color: var(--panel-accent);
+}
+
+.choice-main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex: 1;
+  padding: clamp(28px, 5vh, 60px) 0;
+}
+
+.choice-title {
+  display: block;
+  max-width: 10ch;
+  font-family: var(--serif);
+  font-size: clamp(3.2rem, 5.8vw, 6.4rem);
+  font-weight: 400;
+  line-height: 0.86;
+  letter-spacing: -0.03em;
+  transition: transform 0.45s var(--ease);
+}
+
+.choice-title em {
+  font-style: italic;
+}
+
+.choice:hover .choice-title {
+  transform: translateX(6px);
+}
+
+.choice-description {
+  display: block;
+  max-width: 34ch;
+  margin-top: clamp(20px, 3vh, 30px);
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.7;
+  color: var(--panel-muted);
+}
+
+.choice-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--panel-line);
+  font-family: var(--mono);
+  font-size: 9px;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--panel-muted);
+}
+
+.choice-arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  flex: none;
+  border: 1px solid var(--panel-line);
+  border-radius: 50%;
+  color: var(--panel-ink);
+  transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+
+.choice-arrow svg {
+  width: 15px;
+  height: 15px;
+  transition: transform 0.3s var(--ease);
+}
+
+.choice:hover .choice-arrow {
+  background: var(--panel-ink);
+  border-color: var(--panel-ink);
+  color: var(--panel-bg);
+}
+
+.choice:hover .choice-arrow svg {
+  transform: translate(2px, -2px);
+}
+
+/* ---------- Footer ---------- */
+.page-footer {
+  flex: none;
+  background: var(--paper);
+  border-top: 1px solid var(--line);
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-block: 15px;
+  font-family: var(--mono);
+  font-size: 8px;
+  line-height: 1.5;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .chooser {
+    grid-template-columns: 1fr;
+  }
+
+  .choice {
+    min-height: 42svh;
+  }
+
+  .choice-title {
+    max-width: 12ch;
+    font-size: clamp(3rem, 10vw, 5rem);
+  }
+
+  .choice-description {
+    max-width: 42ch;
+  }
+
+  .choice--software {
+    border-bottom: 1px solid var(--panel-line);
+  }
+}
+
+@media (max-width: 560px) {
+  .header-inner {
+    height: 66px;
+  }
+
+  .brand {
+    font-size: 20px;
+  }
+
+  .location {
+    font-size: 8px;
+  }
+
+  .choice {
+    min-height: 0;
+    padding: 24px 20px;
+  }
+
+  .choice-main {
+    padding: 28px 0;
+  }
+
+  .choice-title {
+    font-size: clamp(2.9rem, 13vw, 4.2rem);
+  }
+
+  .choice-description {
+    font-size: 13px;
+  }
+
+  .footer-inner {
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
+}
